@@ -1,0 +1,15 @@
+<%- include("partials/header") %>
+
+<h2>Delete User</h2>
+<p>Are you sure you want to delete <strong><%= user.username %></strong>?</p>
+
+<form action="/users/<%= user.userid %>?_method=DELETE" method="POST" class="card p-4 shadow-sm">
+  <div class="mb-3">
+    <label class="form-label">Confirm Password</label>
+    <input type="password" name="password" class="form-control" required>
+  </div>
+  <button class="btn btn-danger">Yes, Delete</button>
+  <a href="/users" class="btn btn-secondary">Cancel</a>
+</form>
+
+<%- include("partials/footer") %>

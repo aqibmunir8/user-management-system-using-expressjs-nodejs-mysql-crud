@@ -5,7 +5,7 @@
 <table class="table table-striped table-hover shadow-sm">
   <thead class="table-dark">
     <tr>
-      <th>ID</th>
+      <th>UserID</th>
       <th>Username</th>
       <th>Email</th>
       <th>Actions</th>
@@ -14,12 +14,12 @@
   <tbody>
     <% users.forEach(user => { %>
       <tr>
-        <td><%= user.id %></td>
+        <td><%= user.userid %></td>
         <td><%= user.username %></td>
         <td><%= user.email %></td>
         <td>
-          <a href="/users/<%= user.id %>/edit" class="btn btn-warning btn-sm">Edit</a>
-          <a href="/users/<%= user.id %>/delete" class="btn btn-danger btn-sm">Delete</a>
+          <a href="/users/<%= user.userid %>/edit" class="btn btn-warning btn-sm">Edit</a>
+          <a href="/users/<%= user.userid %>/delete" class="btn btn-danger btn-sm">Delete</a>
         </td>
       </tr>
     <% }) %>

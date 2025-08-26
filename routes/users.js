@@ -9,7 +9,8 @@ router.get("/", async (req, res) => {
     const users = await main("SELECT * FROM users");
     res.render("index", { users });
   } catch (err) {
-    res.status(500).send("Database error");
+    console.error(err);
+    res.status(500).send("DB Error");
   }
 });
 
@@ -20,72 +21,78 @@ router.get("/new", (req, res) => {
 
 // Handle add
 router.post("/", async (req, res) => {
-  const id = uuidv4();
+  const userid = uuidv4();
   const { username, email, password } = req.body;
-  console.log(req.body)
   try {
-    await main("INSERT INTO users (userid, username, email, password) VALUES (?, ?, ?, ?)",
-      [id, username, email, password]);
-    console.log("Yo")
+    await main(
+      "INSERT INTO users (userid, username, email, password) VALUES (?, ?, ?, ?)",
+      [userid, username, email, password]
+    );
     res.redirect("/users");
   } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
+    console.error(err);
+    res.status(500).send("DB Error");
   }
 });
 
 // Edit form
-router.get("/:id/edit", async (req, res) => {
-  const { id } = req.params;
+router.get("/:userid/edit", async (req, res) => {
+  const { userid } = req.params;
   try {
-    const results = await main("SELECT * FROM users WHERE id = ?", [id]);
+    const results = await main("SELECT * FROM users WHERE userid = ?", [userid]);
     res.render("edit", { user: results[0] });
-  } catch  {
+  } catch (err) {
+    console.error(err);
     res.status(500).send("DB Error");
   }
 });
 
 // Update
-router.patch("/:id", async (req, res) => {
-  const { id } = req.params;
+router.patch("/:userid", async (req, res) => {
+  const { userid } = req.params;
   const { password: formPass, username: newUserName } = req.body;
   try {
-    const results = await main("SELECT * FROM users WHERE id = ?", [id]);
+    const results = await main("SELECT * FROM users WHERE userid = ?", [userid]);
     const user = results[0];
+    if (!user) return res.send("User not found");
     if (formPass !== user.password) {
       return res.send("<h2 style='color:red'>Wrong Password</h2>");
     }
-    await main("UPDATE users SET username=? WHERE id=?", [newUserName, id]);
+    await main("UPDATE users SET username=? WHERE userid=?", [newUserName, userid]);
     res.redirect("/users");
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).send("DB Error");
   }
 });
 
 // Delete confirmation page
-router.get("/:id/delete", async (req, res) => {
-  const { id } = req.params;
+router.get("/:userid/delete", async (req, res) => {
+  const { userid } = req.params;
   try {
-    const results = await main("SELECT * FROM users WHERE id=?", [id]);
+    const results = await main("SELECT * FROM users WHERE userid=?", [userid]);
     res.render("delete", { user: results[0] });
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).send("DB Error");
   }
 });
 
 // Handle delete
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
+router.delete("/:userid", async (req, res) => {
+  const { userid } = req.params;
   const { password: formPass } = req.body;
   try {
-    const results = await main("SELECT * FROM users WHERE id=?", [id]);
+    const results = await main("SELECT * FROM users WHERE userid=?", [userid]);
     const user = results[0];
+    if (!user) return res.send("User not found");
     if (formPass !== user.password) {
-      return res.send("<h2 style='color:red'>Wrong Password</h2>");
+      return res.send("Wrong Password");
     }
-    await main("DELETE FROM users WHERE id=?", [id]);
+    await main("DELETE FROM users WHERE userid=?", [userid]);
     res.redirect("/users");
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).send("DB Error");
   }
 });
